@@ -20004,12 +20004,13 @@ const AppActions = {
 
 module.exports = AppActions;
 
-},{"../constants/AppConstants":168,"../dispatcher/AppDispatcher":169}],166:[function(require,module,exports){
+},{"../constants/AppConstants":170,"../dispatcher/AppDispatcher":171}],166:[function(require,module,exports){
 const React = require('react');
 
 const AppActions = require('../actions/AppActions');
 const AppStore = require('../stores/AppStore');
 const SearchForm = require('./SearchForm');
+const MovieResults = require('./MovieResults');
 
 function getAppState () {
     return {
@@ -20031,8 +20032,15 @@ const App = React.createClass({displayName: "App",
     },
 
     render: function () {
+        let movieResults = '';
+        if (this.state.movies && this.state.movies.length) {
+            movieResults = React.createElement(MovieResults, {movies: this.state.movies});
+        }
         return (
-            React.createElement(SearchForm, null)
+            React.createElement("div", null, 
+                React.createElement(SearchForm, null), 
+                movieResults
+            )
         );
     },
 
@@ -20043,7 +20051,67 @@ const App = React.createClass({displayName: "App",
 
 module.exports = App;
 
-},{"../actions/AppActions":165,"../stores/AppStore":171,"./SearchForm":167,"react":164}],167:[function(require,module,exports){
+},{"../actions/AppActions":165,"../stores/AppStore":173,"./MovieResults":168,"./SearchForm":169,"react":164}],167:[function(require,module,exports){
+const React = require('react');
+
+const AppActions = require('../actions/AppActions');
+const AppStore = require('../stores/AppStore');
+
+const Movie = React.createClass({displayName: "Movie",
+    render: function () {
+        let link = 'http://www.imdb.com/title/' + this.props.movie.imdbID;
+        let image = '';
+        if (this.props.movie.Poster != 'N/A') {
+            image = React.createElement("img", {className: "thumbnail img-responsive", src: this.props.movie.Poster});
+        }
+        return (
+            React.createElement("div", {className: "well"}, 
+                React.createElement("div", {className: "row"}, 
+                    React.createElement("div", {className: "col-xs-4"}, 
+                        image
+                    ), 
+                    React.createElement("div", {className: "col-xs-8"}, 
+                        React.createElement("h4", null, this.props.movie.Title), 
+                        React.createElement("ul", {className: "list-group"}, 
+                            React.createElement("li", {className: "list-group-item"}, "Type: ", this.props.movie.Type), 
+                            React.createElement("li", {className: "list-group-item"}, "Year Released: ", this.props.movie.Year), 
+                            React.createElement("li", {className: "list-group-item"}, "IMDB ID: ", this.props.movie.imdbID)
+                        ), 
+                        React.createElement("a", {className: "btn btn-primary", target: "_blank", href: link}, "View on IMDB")
+                    )
+                )
+            )
+        );
+    }
+});
+
+module.exports = Movie;
+
+},{"../actions/AppActions":165,"../stores/AppStore":173,"react":164}],168:[function(require,module,exports){
+const React = require('react');
+
+const AppActions = require('../actions/AppActions');
+const AppStore = require('../stores/AppStore');
+const Movie = require('./Movie');
+
+const MovieResults = React.createClass({displayName: "MovieResults",
+    render: function () {
+        return (
+            React.createElement("div", null, 
+                React.createElement("h3", {className: "text-center"}, "Results"), 
+                this.props.movies.map(function (movie, i) {
+                    return (
+                        React.createElement(Movie, {movie: movie, key: i})
+                    );
+                })
+            )
+        );
+    }
+});
+
+module.exports = MovieResults;
+
+},{"../actions/AppActions":165,"../stores/AppStore":173,"./Movie":167,"react":164}],169:[function(require,module,exports){
 const React = require('react');
 
 const AppActions = require('../actions/AppActions');
@@ -20077,13 +20145,13 @@ const SearchForm = React.createClass({displayName: "SearchForm",
 
 module.exports = SearchForm;
 
-},{"../actions/AppActions":165,"../stores/AppStore":171,"react":164}],168:[function(require,module,exports){
+},{"../actions/AppActions":165,"../stores/AppStore":173,"react":164}],170:[function(require,module,exports){
 module.exports = {
     SEARCH_MOVIES: 'SEARCH_MOVIES',
     RECEIVE_MOVIE_RESULTS: 'RECEIVE_MOVIE_RESULTS'
 };
 
-},{}],169:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 const Dispatcher = require('flux').Dispatcher;
 const assign = require('object-assign');
 
@@ -20099,7 +20167,7 @@ const AppDispatcher = assign(new Dispatcher(), {
 
 module.exports = AppDispatcher;
 
-},{"flux":30,"object-assign":33}],170:[function(require,module,exports){
+},{"flux":30,"object-assign":33}],172:[function(require,module,exports){
 const React = require('react');
 const ReactDOM = require('react-dom');
 
@@ -20111,7 +20179,7 @@ ReactDOM.render(
     document.getElementById('app')
 );
 
-},{"./components/App":166,"./utils/appAPI":172,"react":164,"react-dom":35}],171:[function(require,module,exports){
+},{"./components/App":166,"./utils/appAPI":174,"react":164,"react-dom":35}],173:[function(require,module,exports){
 const EventEmitter = require('events').EventEmitter;
 const assign = require('object-assign');
 
@@ -20164,7 +20232,7 @@ AppDispatcher.register(function (payload) {
 
 module.exports = AppStore;
 
-},{"../constants/AppConstants":168,"../dispatcher/AppDispatcher":169,"../utils/appAPI":172,"events":2,"object-assign":33}],172:[function(require,module,exports){
+},{"../constants/AppConstants":170,"../dispatcher/AppDispatcher":171,"../utils/appAPI":174,"events":2,"object-assign":33}],174:[function(require,module,exports){
 const AppActions = require('../actions/AppActions');
 const keys = require('../../../api_key.json');
 
@@ -20184,4 +20252,4 @@ module.exports = {
     }
 };
 
-},{"../../../api_key.json":1,"../actions/AppActions":165}]},{},[170]);
+},{"../../../api_key.json":1,"../actions/AppActions":165}]},{},[172]);
